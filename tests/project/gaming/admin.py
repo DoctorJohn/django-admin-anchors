@@ -1,5 +1,5 @@
 from django.contrib import admin
-from admin_anchors.decorators import admin_anchor
+from admin_anchors import admin_anchor
 from tests.project.gaming.models import Player, Profile, Team
 
 
