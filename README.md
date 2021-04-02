@@ -1,5 +1,8 @@
 # Django Admin Anchors
 
+[![PyPI](https://img.shields.io/pypi/v/django-admin-anchors)](https://pypi.org/project/django-admin-anchors/)
+[![PyPI - License](https://img.shields.io/pypi/l/django-admin-anchors)](https://github.com/DoctorJohn/django-admin-anchors/blob/master/LICENSE)
+
 Turn Django admin list display items into clickable links to related objects using
 decorators.
 
