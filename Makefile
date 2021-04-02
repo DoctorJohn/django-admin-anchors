@@ -8,11 +8,11 @@ hook:
 
 .PHONY: format
 format:
-	black admin_anchors example tests setup.py
+	black admin_anchors tests setup.py
 
 .PHONY: lint
 lint:
-	flake8 admin_anchors example tests setup.py
+	flake8 admin_anchors tests setup.py
 
 .PHONY: test
 test:
