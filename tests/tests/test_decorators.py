@@ -2,106 +2,107 @@ from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 from admin_anchors.decorators import admin_anchor
-from tests.models import Person, Profile, Article, Comment, Group, Member
+from tests.project.gaming.models import Player, Profile, Team
 
 
 class DecoratorsTestCase(TestCase):
     def test_non_relation_field_cannot_be_referenced(self):
-        person = Person.objects.create()
+        player = Player.objects.create(name="John")
 
-        @admin_anchor(field_name="id")
-        def id_anchor(self, instance):
-            return "Profile"
+        @admin_anchor(field_name="name")
+        def name_anchor(self, instance):
+            return "Name"
 
-        self.assertRaises(ImproperlyConfigured, id_anchor, None, person)
+        self.assertRaises(ImproperlyConfigured, name_anchor, None, player)
 
     def test_empty_anchor_generation(self):
-        person = Person.objects.create()
+        player = Player.objects.create(name="John")
 
         @admin_anchor(field_name="profile")
         def profile_anchor(self, instance):
             return "Profile"
 
-        self.assertEqual(profile_anchor(None, person), "-")
+        self.assertEqual(profile_anchor(None, player), "-")
 
     def test_one_to_one_rel_anchor_generation(self):
-        person = Person.objects.create()
-        profile = Profile.objects.create(person=person)
-        self.assertIsInstance(person._meta.get_field("profile"), models.OneToOneRel)
+        player = Player.objects.create(name="John")
+        profile = Profile.objects.create(player=player)
+        self.assertIsInstance(player._meta.get_field("profile"), models.OneToOneRel)
 
         @admin_anchor(field_name="profile")
         def profile_anchor(self, instance):
             return "Profile"
 
         self.assertEqual(
-            profile_anchor(None, person),
-            f"<a href='/admin/tests/profile/{profile.id}/change/'>Profile</a>",
+            profile_anchor(None, player),
+            f"<a href='/admin/gaming/profile/{profile.id}/change/'>Profile</a>",
         )
 
     def test_one_to_one_field_anchor_generation(self):
-        person = Person.objects.create()
-        profile = Profile.objects.create(person=person)
-        self.assertIsInstance(profile._meta.get_field("person"), models.OneToOneField)
+        player = Player.objects.create(name="John")
+        profile = Profile.objects.create(player=player)
+        self.assertIsInstance(profile._meta.get_field("player"), models.OneToOneField)
 
-        @admin_anchor(field_name="person")
-        def person_anchor(self, instance):
-            return "Person"
+        @admin_anchor(field_name="player")
+        def player_anchor(self, instance):
+            return "Player"
 
         self.assertEqual(
-            person_anchor(None, profile),
-            f"<a href='/admin/tests/person/{person.id}/change/'>Person</a>",
+            player_anchor(None, profile),
+            f"<a href='/admin/gaming/player/{player.id}/change/'>Player</a>",
         )
 
     def test_foreign_key_anchor_generation(self):
-        article = Article.objects.create()
-        comment = Comment.objects.create(article=article)
-        self.assertIsInstance(comment._meta.get_field("article"), models.ForeignKey)
+        player = Player.objects.create(name="John")
+        team = Team.objects.create(captain=player)
+        self.assertIsInstance(team._meta.get_field("captain"), models.ForeignKey)
 
-        @admin_anchor(field_name="article")
-        def article_anchor(self, instance):
-            return "Article"
+        @admin_anchor(field_name="captain")
+        def captain_anchor(self, instance):
+            return "Captain"
 
         self.assertEqual(
-            article_anchor(None, comment),
-            f"<a href='/admin/tests/article/{article.id}/change/'>Article</a>",
+            captain_anchor(None, team),
+            f"<a href='/admin/gaming/player/{player.id}/change/'>Captain</a>",
         )
 
     def test_many_to_one_rel_anchor_generation(self):
-        article = Article.objects.create()
-        Comment.objects.create(article=article)
-        self.assertIsInstance(article._meta.get_field("comments"), models.ManyToOneRel)
+        player = Player.objects.create(name="John")
+        Team.objects.create(captain=player)
+        self.assertIsInstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
 
-        @admin_anchor(field_name="comments")
-        def comments_anchor(self, instance):
-            return "Comments"
+        @admin_anchor(field_name="led_teams")
+        def led_teams_anchor(self, instance):
+            return "Led teams"
 
         self.assertEqual(
-            comments_anchor(None, article),
-            f"<a href='/admin/tests/comment/?article__id={article.id}'>Comments</a>",
+            led_teams_anchor(None, player),
+            f"<a href='/admin/gaming/team/?captain__id={player.id}'>Led teams</a>",
         )
 
     def test_many_to_many_rel_anchor_generation(self):
-        member = Member.objects.create()
-        self.assertIsInstance(member._meta.get_field("groups"), models.ManyToManyRel)
+        player = Player.objects.create(name="John")
+        self.assertIsInstance(player._meta.get_field("teams"), models.ManyToManyRel)
 
-        @admin_anchor(field_name="groups")
-        def groups_anchor(self, instance):
-            return "Groups"
+        @admin_anchor(field_name="teams")
+        def teams_anchor(self, instance):
+            return "Teams"
 
         self.assertEqual(
-            groups_anchor(None, member),
-            f"<a href='/admin/tests/group/?members__id={member.id}'>Groups</a>",
+            teams_anchor(None, player),
+            f"<a href='/admin/gaming/team/?members__id={player.id}'>Teams</a>",
         )
 
     def test_many_to_many_field_anchor_generation(self):
-        group = Group.objects.create()
-        self.assertIsInstance(group._meta.get_field("members"), models.ManyToManyField)
+        player = Player.objects.create(name="John")
+        team = Team.objects.create(name="Winners", captain=player)
+        self.assertIsInstance(team._meta.get_field("members"), models.ManyToManyField)
 
         @admin_anchor(field_name="members")
         def members_anchor(self, instance):
             return "Members"
 
         self.assertEqual(
-            members_anchor(None, group),
-            f"<a href='/admin/tests/member/?groups__id={group.id}'>Members</a>",
+            members_anchor(None, team),
+            f"<a href='/admin/gaming/player/?teams__id={team.id}'>Members</a>",
         )

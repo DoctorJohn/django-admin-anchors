@@ -1,6 +1,8 @@
+DEBUG = True
+
 SECRET_KEY = "fake-key"
 
-ROOT_URLCONF = "tests.urls"
+ROOT_URLCONF = "tests.project.project.urls"
 
 DATABASES = {
     "default": {
@@ -15,12 +17,14 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.messages",
     "django.contrib.sessions",
-    "tests",
+    "django.contrib.staticfiles",
+    "tests.project.gaming",
 ]
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
@@ -36,3 +40,5 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
+
+STATIC_URL = "static/"
