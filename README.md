@@ -15,7 +15,7 @@ decorators.
 ```python
 # yourapp/admin.py
 from django.contrib import admin
-from admin_anchors.decorators import admin_anchor
+from admin_anchors import admin_anchor
 from yourapp.models import Player
 
 
