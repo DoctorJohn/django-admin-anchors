@@ -13,7 +13,7 @@ def admin_anchor(field_name: str):
             obj = get_selected_obj(instance, field_name)
 
             if obj is None:
-                return "-"
+                return self.get_empty_value_display()
 
             field = get_selected_field(instance, field_name)
             related_model = field.related_model
@@ -23,7 +23,7 @@ def admin_anchor(field_name: str):
             if isinstance(field, (models.OneToOneRel, models.ForeignKey)):
                 field_value = getattr(obj, field.name, None)
                 if not field_value:
-                    return "-"
+                    return self.get_empty_value_display()
                 args = [field_value.id]
 
             elif isinstance(field, (models.ManyToOneRel, models.ManyToManyRel)):

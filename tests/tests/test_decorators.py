@@ -1,8 +1,10 @@
+from django.contrib import admin
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured, FieldDoesNotExist
 from admin_anchors import admin_anchor
 from tests.project.gaming.models import Player, Profile, Team
+from tests.project.gaming.admin import PlayerAdmin, ProfileAdmin, TeamAdmin
 
 
 @admin_anchor(field_name="name")
@@ -61,6 +63,25 @@ def player_teams_anchor(self, instance):
 
 
 class AdminAnchorTestCase(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.player_admin = PlayerAdmin(Player, admin.site)
+        self.profile_admin = ProfileAdmin(Profile, admin.site)
+        self.team_admin = TeamAdmin(Team, admin.site)
+
+    def test_respects_the_model_admins_empty_value_display(self):
+        player = Player.objects.create(name="John")
+
+        class PlayerAdmin(admin.ModelAdmin):
+            empty_value_display = "EMPTY"
+
+            @admin_anchor("profile")
+            def profile_link(self, instance):
+                return "Profile"
+
+        model_admin = PlayerAdmin(Player, admin.site)
+        self.assertEqual(model_admin.profile_link(player), "EMPTY")
+
     def test_non_relation_field_cannot_be_referenced(self):
         player = Player.objects.create(name="John")
         self.assertRaises(ImproperlyConfigured, name_anchor, None, player)
@@ -75,12 +96,12 @@ class AdminAnchorTestCase(TestCase):
         self.assertRaises(FieldDoesNotExist, invalid_indirect_field_anchor, None, team)
 
     def test_empty_direct_obj_results_in_empty_anchor(self):
-        self.assertEqual(profile_anchor(None, None), "-")
+        self.assertEqual(profile_anchor(self.profile_admin, None), "-")
 
     def test_empty_indirect_obj_results_in_empty_anchor(self):
         team = Team.objects.create()
         self.assertIsNone(team.captain)
-        self.assertEqual(captains_profile_anchor(None, team), "-")
+        self.assertEqual(captains_profile_anchor(self.profile_admin, team), "-")
 
     def test_one_to_one_rel_anchor_generation(self):
         player = Player.objects.create(name="John")
@@ -97,7 +118,7 @@ class AdminAnchorTestCase(TestCase):
         self.assertIsInstance(player._meta.get_field("profile"), models.OneToOneRel)
         self.assertFalse(hasattr(player, "profile"))
         self.assertEqual(
-            profile_anchor(None, player),
+            profile_anchor(self.profile_admin, player),
             "-",
         )
 
@@ -107,7 +128,7 @@ class AdminAnchorTestCase(TestCase):
         self.assertIsInstance(profile._meta.get_field("player"), models.OneToOneField)
         self.assertIsNotNone(profile.player)
         self.assertEqual(
-            player_anchor(None, profile),
+            player_anchor(self.profile_admin, profile),
             f"<a href='/admin/gaming/player/{player.id}/change/'>Player</a>",
         )
 
@@ -115,7 +136,7 @@ class AdminAnchorTestCase(TestCase):
         profile = Profile.objects.create()
         self.assertIsInstance(profile._meta.get_field("player"), models.OneToOneField)
         self.assertIsNone(profile.player)
-        self.assertEqual(player_anchor(None, profile), "-")
+        self.assertEqual(player_anchor(self.profile_admin, profile), "-")
 
     def test_foreign_key_anchor_generation(self):
         player = Player.objects.create(name="John")
@@ -131,7 +152,7 @@ class AdminAnchorTestCase(TestCase):
         team = Team.objects.create()
         self.assertIsInstance(team._meta.get_field("captain"), models.ForeignKey)
         self.assertIsNone(team.captain)
-        self.assertEqual(captain_anchor(None, team), "-")
+        self.assertEqual(captain_anchor(self.team_admin, team), "-")
 
     def test_many_to_one_rel_anchor_generation(self):
         player = Player.objects.create(name="John")
@@ -234,4 +255,4 @@ class AdminAnchorTestCase(TestCase):
             team.captain._meta.get_field("profile"), models.OneToOneRel
         )
         self.assertFalse(hasattr(player, "profile"))
-        self.assertEqual(captains_profile_anchor(None, team), "-")
+        self.assertEqual(captains_profile_anchor(self.team_admin, team), "-")
