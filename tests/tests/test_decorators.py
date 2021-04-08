@@ -7,57 +7,57 @@ from tests.project.gaming.models import Player, Profile, Team
 from tests.project.gaming.admin import PlayerAdmin, ProfileAdmin, TeamAdmin
 
 
-@admin_anchor(field_name="name")
+@admin_anchor("name")
 def name_anchor(self, instance):
     return "Name"
 
 
-@admin_anchor(field_name="NON_EXISTING_FIELD")
+@admin_anchor("NON_EXISTING_FIELD")
 def invalid_direct_field_anchor(self, instance):
     return "Invalid"
 
 
-@admin_anchor(field_name="captain.NON_EXISTING_FIELD")
+@admin_anchor("captain.NON_EXISTING_FIELD")
 def invalid_indirect_field_anchor(self, instance):
     return "Invalid"
 
 
-@admin_anchor(field_name="profile")
+@admin_anchor("profile")
 def profile_anchor(self, instance):
     return "Profile"
 
 
-@admin_anchor(field_name="captain.profile")
+@admin_anchor("captain.profile")
 def captains_profile_anchor(self, instance):
     return "Profile"
 
 
-@admin_anchor(field_name="player")
+@admin_anchor("player")
 def player_anchor(self, instance):
     return "Player"
 
 
-@admin_anchor(field_name="captain")
+@admin_anchor("captain")
 def captain_anchor(self, instance):
     return "Captain"
 
 
-@admin_anchor(field_name="led_teams")
+@admin_anchor("led_teams")
 def led_teams_anchor(self, instance):
     return "Led teams"
 
 
-@admin_anchor(field_name="teams")
+@admin_anchor("teams")
 def teams_anchor(self, instance):
     return "Teams"
 
 
-@admin_anchor(field_name="members")
+@admin_anchor("members")
 def members_anchor(self, instance):
     return "Members"
 
 
-@admin_anchor(field_name="player.teams")
+@admin_anchor("player.teams")
 def player_teams_anchor(self, instance):
     return "Teams"
 

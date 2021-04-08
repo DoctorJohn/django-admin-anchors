@@ -22,15 +22,15 @@ from yourapp.models import Team
 class TeamAdmin(admin.ModelAdmin):
     list_display = ["__str__", "captain_link", "captains_profile_link", "members_link"]
 
-    @admin_anchor(field_name="captain")
+    @admin_anchor("captain")
     def captain_link(self, instance):
         return str(instance.captain)
 
-    @admin_anchor(field_name="captain.profile")
+    @admin_anchor("captain.profile")
     def captains_profile_link(self, instance):
         return "Captains profile"
 
-    @admin_anchor(field_name="members")
+    @admin_anchor("members")
     def members_link(self, instance):
         return f"{instance.members.count()} members"
 ```

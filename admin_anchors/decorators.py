@@ -7,15 +7,15 @@ from admin_anchors.utils import (
 )
 
 
-def admin_anchor(field_name: str):
+def admin_anchor(selector: str):
     def inner(func):
         def wrapper(self, instance) -> str:
-            obj = get_selected_obj(instance, field_name)
+            obj = get_selected_obj(instance, selector)
 
             if obj is None:
                 return self.get_empty_value_display()
 
-            field = get_selected_field(instance, field_name)
+            field = get_selected_field(instance, selector)
             related_model = field.related_model
             args = None
             query = None
