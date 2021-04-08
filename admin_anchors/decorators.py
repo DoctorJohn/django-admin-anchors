@@ -1,18 +1,27 @@
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
-from admin_anchors.utils import create_admin_anchor
+from admin_anchors.utils import (
+    get_selected_obj,
+    get_selected_field,
+    create_admin_anchor,
+)
 
 
 def admin_anchor(field_name: str):
     def inner(func):
         def wrapper(self, instance) -> str:
-            field = instance._meta.get_field(field_name)
+            obj = get_selected_obj(instance, field_name)
+
+            if obj is None:
+                return "-"
+
+            field = get_selected_field(instance, field_name)
             related_model = field.related_model
             args = None
             query = None
 
             if isinstance(field, (models.OneToOneRel, models.ForeignKey)):
-                field_value = getattr(instance, field_name, None)
+                field_value = getattr(obj, field.name, None)
                 if not field_value:
                     return "-"
                 args = [field_value.id]
