@@ -4,12 +4,7 @@ SECRET_KEY = "fake-key"
 
 ROOT_URLCONF = "tests.project.project.urls"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite",
-    }
-}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "db.sqlite"}}
 
 INSTALLED_APPS = [
     "django.contrib.admin",
