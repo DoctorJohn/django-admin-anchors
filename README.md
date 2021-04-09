@@ -1,7 +1,15 @@
 # Django Admin Anchors
 
-[![PyPI](https://img.shields.io/pypi/v/django-admin-anchors)](https://pypi.org/project/django-admin-anchors/)
-[![PyPI - License](https://img.shields.io/pypi/l/django-admin-anchors)](https://github.com/DoctorJohn/django-admin-anchors/blob/master/LICENSE)
+[![PyPI][pypi-image][pypi-url]
+[![License][license-image][license-url]
+[![Tests][tests-image]][tests-url]
+
+[pypi-image]: https://img.shields.io/pypi/v/django-admin-anchors
+[pypi-url]: https://pypi.org/project/django-admin-anchors/
+[license-image]: https://img.shields.io/pypi/l/django-admin-anchors
+[license-url]: https://github.com/DoctorJohn/django-admin-anchors/blob/master/LICENSE
+[tests-image]: https://github.com/DoctorJohn/django-admin-anchors/workflows/Test/badge.svg
+[tests-url]: https://github.com/DoctorJohn/django-admin-anchors/actions
 
 Turn Django admin list display items into clickable links to related objects using
 decorators.
