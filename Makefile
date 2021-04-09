@@ -18,8 +18,16 @@ lint:
 test:
 	py.test --cov-report term-missing --cov=admin_anchors tests
 
-.PHONY: tox
-tox:
+.PHONY: tox-format
+tox-format:
+	TOXENV=black tox
+
+.PHONY: tox-lint
+tox-lint:
+	TOXENV=flake8 tox
+
+.PHONY: tox-test
+tox-test:
 	tox
 
 .PHONY: release
