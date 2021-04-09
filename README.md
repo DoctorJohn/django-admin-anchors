@@ -1,7 +1,7 @@
 # Django Admin Anchors
 
-[![PyPI][pypi-image][pypi-url]
-[![License][license-image][license-url]
+[![PyPI][pypi-image]][pypi-url]
+[![License][license-image]][license-url]
 [![Tests][tests-image]][tests-url]
 
 [pypi-image]: https://img.shields.io/pypi/v/django-admin-anchors
