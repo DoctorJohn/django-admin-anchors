@@ -6,6 +6,7 @@ from tests.project.gaming.models import Player, Profile, Team
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ["__str__", "profile_link", "teams_link", "led_teams_link"]
+    readonly_fields = ["profile_link"]
 
     @admin_anchor("profile")
     def profile_link(self, instance):

@@ -20,6 +20,10 @@ decorators.
 
 ## Usage
 
+Take a look at the `tests/project` directory to see a runnable example project.
+
+### Add links to the object list page
+
 ```python
 from django.contrib import admin
 from admin_anchors import admin_anchor
@@ -43,7 +47,22 @@ class TeamAdmin(admin.ModelAdmin):
         return f"{instance.members.count()} members"
 ```
 
-Take a look at the `tests/project` directory to see a runnable example project.
+### Add links to the object edit page
+
+```python
+from django.contrib import admin
+from admin_anchors import admin_anchor
+from yourapp.models import Player
+
+
+@admin.register(Player)
+class PlayerAdmin(admin.ModelAdmin):
+    readonly_fields = ["profile_link"]
+
+    @admin_anchor("profile")
+    def profile_link(self, instance):
+        return "Profile"
+```
 
 ## Contributing
 
