@@ -1,9 +1,10 @@
-from django.test import TestCase
 from django.core.exceptions import FieldDoesNotExist
+from django.test import TestCase
+
 from admin_anchors.utils import (
-    get_selected_obj,
-    get_selected_field,
     create_admin_anchor,
+    get_selected_field,
+    get_selected_obj,
 )
 from tests.project.gaming.models import Player, Team
 

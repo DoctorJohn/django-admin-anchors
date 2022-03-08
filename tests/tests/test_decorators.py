@@ -1,10 +1,11 @@
 from django.contrib import admin
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 from django.test import TestCase
-from django.core.exceptions import ImproperlyConfigured, FieldDoesNotExist
+
 from admin_anchors import admin_anchor
-from tests.project.gaming.models import Player, Profile, Team
 from tests.project.gaming.admin import PlayerAdmin, ProfileAdmin, TeamAdmin
+from tests.project.gaming.models import Player, Profile, Team
 
 
 @admin_anchor("name")

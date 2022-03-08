@@ -1,9 +1,10 @@
-from typing import Optional, Dict, List
-from django.db.models.fields import Field
+from typing import Dict, List, Optional
+
 from django.db import models
+from django.db.models.fields import Field
 from django.urls import reverse
-from django.utils.http import urlencode
 from django.utils.html import format_html
+from django.utils.http import urlencode
 
 
 def create_admin_anchor(

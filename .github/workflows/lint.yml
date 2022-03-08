@@ -42,4 +42,5 @@ jobs:
       run: |
         source .venv/bin/activate
         flake8 admin_anchors tests
+        isort admin_anchors tests --check-only
         black admin_anchors tests --check
