@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "django-admin-anchors"
+version = "2.0.1"
+description = "Link related objects in Django admin using decorators"
+license = "MIT"
+authors = ["Jonathan Ehwald <github@ehwald.info>"]
+readme = "README.md"
+homepage = "https://github.com/DoctorJohn/django-admin-anchors"
+repository = "https://github.com/DoctorJohn/django-admin-anchors"
+documentation = "https://github.com/DoctorJohn/django-admin-anchors"
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 2.2",
+    "Framework :: Django :: 3.0",
+    "Framework :: Django :: 3.1",
+    "Framework :: Django :: 3.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+packages = [ { include = "admin_anchors" } ]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Django = ">=2.2"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+black = "^22.1.0"
+pre-commit = "^2.17.0"
+pytest = "^7.0.1"
+pytest-cov = "^3.0.0"
+pytest-django = "^4.5.2"
+twine = "^3.8.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.project.project.settings"
