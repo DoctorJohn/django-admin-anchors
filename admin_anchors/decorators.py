@@ -1,9 +1,10 @@
-from django.db import models
 from django.core.exceptions import ImproperlyConfigured
+from django.db import models
+
 from admin_anchors.utils import (
-    get_selected_obj,
-    get_selected_field,
     create_admin_anchor,
+    get_selected_field,
+    get_selected_obj,
 )
 
 
