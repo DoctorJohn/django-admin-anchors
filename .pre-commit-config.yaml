@@ -3,7 +3,7 @@ repos:
     rev: "22.1.0"
     hooks:
       - id: black
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: "4.0.1"
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: 'v0.0.264'
     hooks:
-      - id: flake8
+      - id: ruff
