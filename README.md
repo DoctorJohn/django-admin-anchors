@@ -67,3 +67,12 @@ class PlayerAdmin(admin.ModelAdmin):
     def profile_link(self, instance):
         return "Profile"
 ```
+
+## Example project
+
+Take a look at our Django example project under `tests/project`.
+You can run it by executing these commands:
+
+1. `poetry install`
+2. `poetry run python tests/project/manage.py migrate`
+3. `poetry run python tests/project/manage.py runserver`
