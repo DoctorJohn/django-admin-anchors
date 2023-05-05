@@ -16,10 +16,10 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -31,7 +31,7 @@ jobs:
 
     - name: Load cached venv
       id: cached-poetry-dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -45,10 +45,8 @@ jobs:
 
     - name: Install django ${{ matrix.django-version }}
       run: |
-        source .venv/bin/activate
-        pip install "Django==${{ matrix.django-version }}"
+        poetry run pip install "Django==${{ matrix.django-version }}"
 
     - name: Run tests
       run: |
-        source .venv/bin/activate
-        pytest
+        poetry run pytest
