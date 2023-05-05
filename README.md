@@ -28,6 +28,8 @@ Take a look at the `tests/project` directory to see a runnable example project.
 
 ### Add links to the object list page
 
+![Object list page](.github/images/list.png)
+
 ```python
 from django.contrib import admin
 from admin_anchors import admin_anchor
@@ -51,7 +53,9 @@ class TeamAdmin(admin.ModelAdmin):
         return f"{instance.members.count()} members"
 ```
 
-### Add links to the object edit page
+### Add links to the object update page
+
+![Object change page](.github/images/change.png)
 
 ```python
 from django.contrib import admin
