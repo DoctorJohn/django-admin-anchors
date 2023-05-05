@@ -1,7 +1,7 @@
+import pytest
 from django.contrib import admin
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
-from django.test import TestCase
 
 from admin_anchors import admin_anchor
 from tests.project.gaming.admin import PlayerAdmin, ProfileAdmin, TeamAdmin
@@ -63,197 +63,262 @@ def player_teams_anchor(self, instance):
     return "Teams"
 
 
-class AdminAnchorTestCase(TestCase):
-    def setUp(self) -> None:
-        super().setUp()
-        self.player_admin = PlayerAdmin(Player, admin.site)
-        self.profile_admin = ProfileAdmin(Profile, admin.site)
-        self.team_admin = TeamAdmin(Team, admin.site)
+@pytest.fixture
+def player_admin():
+    return PlayerAdmin(Player, admin.site)
 
-    def test_respects_the_model_admins_empty_value_display(self):
-        player = Player.objects.create(name="John")
 
-        class PlayerAdmin(admin.ModelAdmin):
-            empty_value_display = "EMPTY"
+@pytest.fixture
+def profile_admin():
+    return ProfileAdmin(Profile, admin.site)
 
-            @admin_anchor("profile")
-            def profile_link(self, instance):
-                return "Profile"
 
-        model_admin = PlayerAdmin(Player, admin.site)
-        self.assertEqual(model_admin.profile_link(player), "EMPTY")
+@pytest.fixture
+def team_admin():
+    return TeamAdmin(Team, admin.site)
 
-    def test_non_relation_field_cannot_be_referenced(self):
-        player = Player.objects.create(name="John")
-        self.assertRaises(ImproperlyConfigured, name_anchor, None, player)
 
-    def test_raises_for_invalid_direct_field(self):
-        player = Player.objects.create(name="John")
-        self.assertRaises(FieldDoesNotExist, invalid_direct_field_anchor, None, player)
+@pytest.mark.django_db
+def test_respects_the_model_admins_empty_value_display():
+    player = Player.objects.create(name="John")
 
-    def test_raises_for_invalid_indirect_field(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create(captain=player)
-        self.assertRaises(FieldDoesNotExist, invalid_indirect_field_anchor, None, team)
+    class PlayerAdmin(admin.ModelAdmin):
+        empty_value_display = "EMPTY"
 
-    def test_empty_direct_obj_results_in_empty_anchor(self):
-        self.assertEqual(profile_anchor(self.profile_admin, None), "-")
+        @admin_anchor("profile")
+        def profile_link(self, instance):
+            return "Profile"
 
-    def test_empty_indirect_obj_results_in_empty_anchor(self):
-        team = Team.objects.create()
-        self.assertIsNone(team.captain)
-        self.assertEqual(captains_profile_anchor(self.profile_admin, team), "-")
+    model_admin = PlayerAdmin(Player, admin.site)
+    assert model_admin.profile_link(player) == "EMPTY"
 
-    def test_one_to_one_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        profile = Profile.objects.create(player=player)
-        self.assertIsInstance(player._meta.get_field("profile"), models.OneToOneRel)
-        self.assertIsNotNone(player.profile)
-        self.assertEqual(
-            profile_anchor(None, player),
-            f"<a href='/admin/gaming/profile/{profile.id}/change/'>Profile</a>",
-        )
 
-    def test_empty_one_to_one_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        self.assertIsInstance(player._meta.get_field("profile"), models.OneToOneRel)
-        self.assertFalse(hasattr(player, "profile"))
-        self.assertEqual(
-            profile_anchor(self.profile_admin, player),
-            "-",
-        )
+@pytest.mark.django_db
+def test_non_relation_field_cannot_be_referenced():
+    player = Player.objects.create(name="John")
 
-    def test_one_to_one_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        profile = Profile.objects.create(player=player)
-        self.assertIsInstance(profile._meta.get_field("player"), models.OneToOneField)
-        self.assertIsNotNone(profile.player)
-        self.assertEqual(
-            player_anchor(self.profile_admin, profile),
-            f"<a href='/admin/gaming/player/{player.id}/change/'>Player</a>",
-        )
+    with pytest.raises(ImproperlyConfigured):
+        name_anchor(None, player)
 
-    def test_emtpy_one_to_one_field_anchor_generation(self):
-        profile = Profile.objects.create()
-        self.assertIsInstance(profile._meta.get_field("player"), models.OneToOneField)
-        self.assertIsNone(profile.player)
-        self.assertEqual(player_anchor(self.profile_admin, profile), "-")
 
-    def test_foreign_key_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create(captain=player)
-        self.assertIsInstance(team._meta.get_field("captain"), models.ForeignKey)
-        self.assertIsNotNone(team.captain)
-        self.assertEqual(
-            captain_anchor(None, team),
-            f"<a href='/admin/gaming/player/{player.id}/change/'>Captain</a>",
-        )
+@pytest.mark.django_db
+def test_raises_for_invalid_direct_field():
+    player = Player.objects.create(name="John")
 
-    def test_empty_foreign_key_anchor_generation(self):
-        team = Team.objects.create()
-        self.assertIsInstance(team._meta.get_field("captain"), models.ForeignKey)
-        self.assertIsNone(team.captain)
-        self.assertEqual(captain_anchor(self.team_admin, team), "-")
+    with pytest.raises(FieldDoesNotExist):
+        invalid_direct_field_anchor(None, player)
 
-    def test_many_to_one_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create(captain=player)
-        self.assertIsInstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
-        self.assertCountEqual(list(player.led_teams.all()), [team])
-        self.assertEqual(
-            led_teams_anchor(None, player),
-            f"<a href='/admin/gaming/team/?captain__id={player.id}'>Led teams</a>",
-        )
 
-    def test_empty_many_to_one_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        self.assertIsInstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
-        self.assertCountEqual(list(player.led_teams.all()), [])
-        self.assertEqual(
-            led_teams_anchor(None, player),
-            f"<a href='/admin/gaming/team/?captain__id={player.id}'>Led teams</a>",
-        )
+@pytest.mark.django_db
+def test_raises_for_invalid_indirect_field():
+    player = Player.objects.create(name="John")
+    team = Team.objects.create(captain=player)
 
-    def test_many_to_many_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create()
-        team.members.add(player)
-        self.assertIsInstance(player._meta.get_field("teams"), models.ManyToManyRel)
-        self.assertListEqual(list(player.teams.all()), [team])
-        self.assertEqual(
-            teams_anchor(None, player),
-            f"<a href='/admin/gaming/team/?members__id={player.id}'>Teams</a>",
-        )
+    with pytest.raises(FieldDoesNotExist):
+        invalid_indirect_field_anchor(None, team)
 
-    def test_empty_many_to_many_rel_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        self.assertIsInstance(player._meta.get_field("teams"), models.ManyToManyRel)
-        self.assertListEqual(list(player.teams.all()), [])
-        self.assertEqual(
-            teams_anchor(None, player),
-            f"<a href='/admin/gaming/team/?members__id={player.id}'>Teams</a>",
-        )
 
-    def test_many_to_many_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create()
-        team.members.add(player)
-        self.assertIsInstance(team._meta.get_field("members"), models.ManyToManyField)
-        self.assertListEqual(list(team.members.all()), [player])
-        self.assertEqual(
-            members_anchor(None, team),
-            f"<a href='/admin/gaming/player/?teams__id={team.id}'>Members</a>",
-        )
+def test_empty_direct_obj_results_in_empty_anchor(profile_admin):
+    assert profile_anchor(profile_admin, None) == "-"
 
-    def test_empty_many_to_many_field_anchor_generation(self):
-        team = Team.objects.create()
-        self.assertIsInstance(team._meta.get_field("members"), models.ManyToManyField)
-        self.assertListEqual(list(team.members.all()), [])
-        self.assertEqual(
-            members_anchor(None, team),
-            f"<a href='/admin/gaming/player/?teams__id={team.id}'>Members</a>",
-        )
 
-    def test_indirect_many_to_many_rel_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        profile = Profile.objects.create(player=player)
-        team = Team.objects.create()
-        team.members.add(player)
-        self.assertIsInstance(player._meta.get_field("teams"), models.ManyToManyRel)
-        self.assertListEqual(list(player.teams.all()), [team])
-        self.assertEqual(
-            player_teams_anchor(None, profile),
-            f"<a href='/admin/gaming/team/?members__id={player.id}'>Teams</a>",
-        )
+@pytest.mark.django_db
+def test_empty_indirect_obj_results_in_empty_anchor(profile_admin):
+    team = Team.objects.create()
+    assert team.captain is None
+    assert captains_profile_anchor(profile_admin, team) == "-"
 
-    def test_empty_indirect_many_to_many_rel_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        profile = Profile.objects.create(player=player)
-        self.assertIsInstance(player._meta.get_field("teams"), models.ManyToManyRel)
-        self.assertListEqual(list(player.teams.all()), [])
-        self.assertEqual(
-            player_teams_anchor(None, profile),
-            f"<a href='/admin/gaming/team/?members__id={player.id}'>Teams</a>",
-        )
 
-    def test_indirect_one_to_one_rel_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        profile = Profile.objects.create(player=player)
-        team = Team.objects.create(captain=player)
-        self.assertIsInstance(
-            team.captain._meta.get_field("profile"), models.OneToOneRel
-        )
-        self.assertIsNotNone(player.profile)
-        self.assertEqual(
-            captains_profile_anchor(None, team),
-            f"<a href='/admin/gaming/profile/{profile.id}/change/'>Profile</a>",
-        )
+@pytest.mark.django_db
+def test_one_to_one_rel_anchor_generation():
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
 
-    def test_empty_indirect_one_to_one_rel_field_anchor_generation(self):
-        player = Player.objects.create(name="John")
-        team = Team.objects.create(captain=player)
-        self.assertIsInstance(
-            team.captain._meta.get_field("profile"), models.OneToOneRel
-        )
-        self.assertFalse(hasattr(player, "profile"))
-        self.assertEqual(captains_profile_anchor(self.team_admin, team), "-")
+    assert isinstance(player._meta.get_field("profile"), models.OneToOneRel)
+    assert player.profile is not None
+    assert (
+        profile_anchor(None, player)
+        == f"<a href='/admin/gaming/profile/{profile.pk}/change/'>Profile</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_one_to_one_rel_anchor_generation(profile_admin):
+    player = Player.objects.create(name="John")
+
+    assert isinstance(player._meta.get_field("profile"), models.OneToOneRel)
+    assert not hasattr(player, "profile")
+    assert profile_anchor(profile_admin, player) == "-"
+
+
+@pytest.mark.django_db
+def test_one_to_one_field_anchor_generation(profile_admin):
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
+
+    assert isinstance(profile._meta.get_field("player"), models.OneToOneField)
+    assert profile.player is not None
+    assert (
+        player_anchor(profile_admin, profile)
+        == f"<a href='/admin/gaming/player/{player.pk}/change/'>Player</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_emtpy_one_to_one_field_anchor_generation(profile_admin):
+    profile = Profile.objects.create()
+
+    assert isinstance(profile._meta.get_field("player"), models.OneToOneField)
+    assert profile.player is None
+    assert player_anchor(profile_admin, profile) == "-"
+
+
+@pytest.mark.django_db
+def test_foreign_key_anchor_generation():
+    player = Player.objects.create(name="John")
+    team = Team.objects.create(captain=player)
+
+    assert isinstance(team._meta.get_field("captain"), models.ForeignKey)
+    assert team.captain is not None
+    assert (
+        captain_anchor(None, team)
+        == f"<a href='/admin/gaming/player/{player.pk}/change/'>Captain</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_foreign_key_anchor_generation(team_admin):
+    team = Team.objects.create()
+
+    assert isinstance(team._meta.get_field("captain"), models.ForeignKey)
+    assert team.captain is None
+    assert captain_anchor(team_admin, team) == "-"
+
+
+@pytest.mark.django_db
+def test_many_to_one_rel_anchor_generation():
+    player = Player.objects.create(name="John")
+    team = Team.objects.create(captain=player)
+
+    assert isinstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
+    assert list(player.led_teams.all()) == [team]
+    assert (
+        led_teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?captain__id={player.pk}'>Led teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_many_to_one_rel_anchor_generation():
+    player = Player.objects.create(name="John")
+
+    assert isinstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
+    assert list(player.led_teams.all()) == []
+    assert (
+        led_teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?captain__id={player.pk}'>Led teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_many_to_many_rel_anchor_generation():
+    player = Player.objects.create(name="John")
+    team = Team.objects.create()
+    team.members.add(player)
+
+    assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
+    assert list(player.teams.all()) == [team]
+    assert (
+        teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_many_to_many_rel_anchor_generation():
+    player = Player.objects.create(name="John")
+
+    assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
+    assert list(player.teams.all()) == []
+    assert (
+        teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_many_to_many_field_anchor_generation():
+    player = Player.objects.create(name="John")
+    team = Team.objects.create()
+    team.members.add(player)
+
+    assert isinstance(team._meta.get_field("members"), models.ManyToManyField)
+    assert list(team.members.all()) == [player]
+    assert (
+        members_anchor(None, team)
+        == f"<a href='/admin/gaming/player/?teams__id={team.pk}'>Members</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_many_to_many_field_anchor_generation():
+    team = Team.objects.create()
+
+    assert isinstance(team._meta.get_field("members"), models.ManyToManyField)
+    assert list(team.members.all()) == []
+    assert (
+        members_anchor(None, team)
+        == f"<a href='/admin/gaming/player/?teams__id={team.pk}'>Members</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_indirect_many_to_many_rel_field_anchor_generation():
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
+    team = Team.objects.create()
+    team.members.add(player)
+
+    assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
+    assert list(player.teams.all()) == [team]
+    assert (
+        player_teams_anchor(None, profile)
+        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_indirect_many_to_many_rel_field_anchor_generation():
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
+
+    assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
+    assert list(player.teams.all()) == []
+    assert (
+        player_teams_anchor(None, profile)
+        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_indirect_one_to_one_rel_field_anchor_generation():
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
+    team = Team.objects.create(captain=player)
+
+    assert isinstance(team.captain._meta.get_field("profile"), models.OneToOneRel)
+    assert player.profile is not None
+    assert (
+        captains_profile_anchor(None, team)
+        == f"<a href='/admin/gaming/profile/{profile.pk}/change/'>Profile</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_empty_indirect_one_to_one_rel_field_anchor_generation(team_admin):
+    player = Player.objects.create(name="John")
+    team = Team.objects.create(captain=player)
+
+    assert isinstance(team.captain._meta.get_field("profile"), models.OneToOneRel)
+    assert not hasattr(player, "profile")
+    assert captains_profile_anchor(team_admin, team) == "-"
