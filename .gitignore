@@ -20,3 +20,4 @@ db.sqlite
 
 # Editors
 .idea/
+.vscode/
