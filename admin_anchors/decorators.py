@@ -12,9 +12,9 @@ def admin_anchor(dotted_field_path: str):
     def inner(func):
         def wrapper(model_admin: admin.ModelAdmin, instance: models.Model) -> str:
             field_path = dotted_field_path.split(".")
-            field_name = field_path.pop()
+            field_name = field_path[-1]
 
-            field_parent_path = field_path
+            field_parent_path = field_path[:-1]
             field_parent = resolve_instance_field_path(instance, field_parent_path)
 
             if field_parent is None:
@@ -26,18 +26,20 @@ def admin_anchor(dotted_field_path: str):
             if related_model is None:
                 raise ImproperlyConfigured(f"Non-relation field referenced: {field}")
 
+            field_value = getattr(field_parent, field_name, None)
+
+            if not field_value:
+                return model_admin.get_empty_value_display()
+
             args = None
             query = None
 
             if isinstance(field, (models.OneToOneRel, models.ForeignKey)):
-                field_value = getattr(field_parent, field_name, None)
-                if not field_value:
-                    return model_admin.get_empty_value_display()
-                args = [field_value.id]
+                args = [field_value.pk]
             elif isinstance(field, (models.ManyToOneRel, models.ManyToManyRel)):
-                query = {f"{field.field.name}__id": instance.pk}
+                query = {f"{field.field.name}__pk": instance.pk}
             elif isinstance(field, models.ManyToManyField):
-                query = {f"{field.related_query_name()}__id": instance.pk}
+                query = {f"{field.related_query_name()}__pk": instance.pk}
 
             page_name = "change" if args else "changelist"
 
