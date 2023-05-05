@@ -197,7 +197,7 @@ def test_many_to_one_rel_anchor_generation(player, team):
     assert list(player.led_teams.all()) == [team]
     assert (
         led_teams_anchor(None, player)
-        == f"<a href='/admin/gaming/team/?captain__id={player.pk}'>Led teams</a>"
+        == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
     )
 
 
@@ -207,7 +207,7 @@ def test_empty_many_to_one_rel_anchor_generation(player):
     assert list(player.led_teams.all()) == []
     assert (
         led_teams_anchor(None, player)
-        == f"<a href='/admin/gaming/team/?captain__id={player.pk}'>Led teams</a>"
+        == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
     )
 
 
@@ -219,7 +219,7 @@ def test_many_to_many_rel_anchor_generation(player, team):
     assert list(player.teams.all()) == [team]
     assert (
         teams_anchor(None, player)
-        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
     )
 
 
@@ -229,7 +229,7 @@ def test_empty_many_to_many_rel_anchor_generation(player):
     assert list(player.teams.all()) == []
     assert (
         teams_anchor(None, player)
-        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
     )
 
 
@@ -241,7 +241,7 @@ def test_many_to_many_field_anchor_generation(player, team):
     assert list(team.members.all()) == [player]
     assert (
         members_anchor(None, team)
-        == f"<a href='/admin/gaming/player/?teams__id={team.pk}'>Members</a>"
+        == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
     )
 
 
@@ -251,7 +251,7 @@ def test_empty_many_to_many_field_anchor_generation(team):
     assert list(team.members.all()) == []
     assert (
         members_anchor(None, team)
-        == f"<a href='/admin/gaming/player/?teams__id={team.pk}'>Members</a>"
+        == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
     )
 
 
@@ -263,7 +263,7 @@ def test_indirect_many_to_many_rel_field_anchor_generation(player, profile, team
     assert list(player.teams.all()) == [team]
     assert (
         player_teams_anchor(None, profile)
-        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
     )
 
 
@@ -273,7 +273,7 @@ def test_empty_indirect_many_to_many_rel_field_anchor_generation(player, profile
     assert list(player.teams.all()) == []
     assert (
         player_teams_anchor(None, profile)
-        == f"<a href='/admin/gaming/team/?members__id={player.pk}'>Teams</a>"
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
     )
 
 
