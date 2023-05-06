@@ -83,4 +83,5 @@ You can run it by executing these commands:
 
 1. `poetry install`
 2. `poetry run python tests/project/manage.py migrate`
-3. `poetry run python tests/project/manage.py runserver`
+3. `poetry run python tests/project/manage.py createsuperuser`
+4. `poetry run python tests/project/manage.py runserver`
