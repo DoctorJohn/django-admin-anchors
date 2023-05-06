@@ -142,7 +142,7 @@ def test_one_to_one_rel_anchor_generation(player, profile):
     assert player.profile is not None
     assert (
         profile_anchor(None, player)
-        == f"<a href='/admin/gaming/profile/{profile.pk}/change/'>Profile</a>"
+        == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
     )
 
 
@@ -159,7 +159,7 @@ def test_one_to_one_field_anchor_generation(player, profile, profile_admin):
     assert profile.player is not None
     assert (
         player_anchor(profile_admin, profile)
-        == f"<a href='/admin/gaming/player/{player.pk}/change/'>Player</a>"
+        == f"<a href='/admin/gaming/player/?pk={player.pk}'>Player</a>"
     )
 
 
@@ -178,7 +178,7 @@ def test_foreign_key_anchor_generation(player, team):
     assert team.captain is not None
     assert (
         captain_anchor(None, team)
-        == f"<a href='/admin/gaming/player/{player.pk}/change/'>Captain</a>"
+        == f"<a href='/admin/gaming/player/?pk={player.pk}'>Captain</a>"
     )
 
 
@@ -283,7 +283,7 @@ def test_indirect_one_to_one_rel_field_anchor_generation(player, profile, team):
     assert player.profile is not None
     assert (
         captains_profile_anchor(None, team)
-        == f"<a href='/admin/gaming/profile/{profile.pk}/change/'>Profile</a>"
+        == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
     )
 
 

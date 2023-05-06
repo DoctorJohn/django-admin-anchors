@@ -31,24 +31,19 @@ def admin_anchor(dotted_field_path: str):
             if not field_value:
                 return model_admin.get_empty_value_display()
 
-            args = None
-            query = None
-
             if isinstance(field, (models.OneToOneRel, models.ForeignKey)):
-                args = [field_value.pk]
+                query = {"pk": field_value.pk}
             elif isinstance(field, (models.ManyToOneRel, models.ManyToManyRel)):
                 query = {f"{field.field.name}__pk": instance.pk}
             elif isinstance(field, models.ManyToManyField):
                 query = {f"{field.related_query_name()}__pk": instance.pk}
-
-            page_name = "change" if args else "changelist"
+            else:
+                raise ImproperlyConfigured(f"Unsupported field type: {field}")
 
             return create_admin_anchor(
-                page_name=page_name,
                 app_label=related_model._meta.app_label,
                 model_name=related_model._meta.model_name,
                 label=func(model_admin, instance),
-                args=args,
                 query=query,
             )
 
