@@ -40,34 +40,11 @@ def test_resolving_empty_path(player):
     assert resolve_instance_field_path(player, []) == player
 
 
-def test_create_admin_anchor_resolves_changelist_page():
+def test_create_admin_anchor():
     link = create_admin_anchor(
-        page_name="changelist",
-        app_label="gaming",
-        model_name="player",
-        label="Players",
-    )
-    assert link == "<a href='/admin/gaming/player/'>Players</a>"
-
-
-def test_create_admin_anchor_resolves_filtered_changelist_page():
-    link = create_admin_anchor(
-        page_name="changelist",
         app_label="gaming",
         model_name="player",
         label="Players",
         query={"teams__id": 1},
     )
     assert link == "<a href='/admin/gaming/player/?teams__id=1'>Players</a>"
-
-
-@pytest.mark.django_db
-def test_create_admin_anchor_resolves_change_page(player):
-    link = create_admin_anchor(
-        page_name="change",
-        app_label="gaming",
-        model_name="player",
-        label="Player",
-        args=[player.pk],
-    )
-    assert link == f"<a href='/admin/gaming/player/{player.pk}/change/'>Player</a>"

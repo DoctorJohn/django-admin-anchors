@@ -15,8 +15,12 @@
 [tests-image]: https://github.com/DoctorJohn/django-admin-anchors/workflows/Tests/badge.svg
 [tests-url]: https://github.com/DoctorJohn/django-admin-anchors/actions
 
-Turn Django admin list display items into clickable links to related objects using
-decorators.
+Turn Django admin list display items into clickable links to related
+objects using decorators.
+
+Clicking admin anchors will redirect to a filtered changelist view
+showing the related objects. This allows you to get a quick overview
+and run actions on the filtered objects.
 
 ## Installation
 

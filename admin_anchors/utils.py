@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 from django.db import models
 from django.urls import reverse
@@ -24,14 +24,12 @@ def resolve_instance_field_path(
 
 
 def create_admin_anchor(
-    page_name: str,
     app_label: str,
     model_name: str,
     label: str,
-    args: Optional[List] = None,
-    query: Optional[Dict] = None,
+    query: Dict[str, Any],
 ) -> str:
-    url = reverse(f"admin:{app_label}_{model_name}_{page_name}", args=args)
-    if query:
-        url += "?" + urlencode(query)
+    path = reverse(f"admin:{app_label}_{model_name}_changelist")
+    query_string = urlencode(query)
+    url = f"{path}?{query_string}"
     return format_html("<a href='{}'>{}</a>", url, label)
