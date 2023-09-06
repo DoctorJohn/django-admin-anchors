@@ -32,7 +32,8 @@ Take a look at the `tests/project` directory to see a runnable example project.
 
 ### Add links to the object list page
 
-![Object list page](.github/images/list.png)
+![Object list page (light mode)](.github/images/list-light.png#gh-light-mode-only)
+![Object list page (dark mode)](.github/images/list-dark.png#gh-dark-mode-only)
 
 ```python
 from django.contrib import admin
@@ -59,7 +60,8 @@ class TeamAdmin(admin.ModelAdmin):
 
 ### Add links to the object update page
 
-![Object change page](.github/images/change.png)
+![Object change page (light mode)](.github/images/change-light.png#gh-light-mode-only)
+![Object change page (dark mode)](.github/images/change-dark.png#gh-dark-mode-only)
 
 ```python
 from django.contrib import admin
