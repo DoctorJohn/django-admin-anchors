@@ -1,5 +1,5 @@
-from django.core.exceptions import ImproperlyConfigured
 from django.contrib import admin
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 
 from admin_anchors.utils import (

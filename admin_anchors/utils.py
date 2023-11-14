@@ -1,10 +1,10 @@
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.http import urlencode
-from django.core.exceptions import ObjectDoesNotExist
 
 
 def resolve_instance_field_path(instance: models.Model, field_path: List[str]) -> Optional[models.Model]:

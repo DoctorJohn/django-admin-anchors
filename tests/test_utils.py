@@ -1,7 +1,7 @@
 import pytest
 
-from admin_anchors.utils import resolve_instance_field_path, create_admin_anchor
-from tests.project.gaming.models import Player, Team, Profile
+from admin_anchors.utils import create_admin_anchor, resolve_instance_field_path
+from tests.project.gaming.models import Player, Profile, Team
 
 
 @pytest.fixture
