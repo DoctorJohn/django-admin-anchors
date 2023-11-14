@@ -9,9 +9,7 @@ class Player(models.Model):
 
 
 class Profile(models.Model):
-    player = models.OneToOneField(
-        Player, on_delete=models.CASCADE, related_name="profile", blank=True, null=True
-    )
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, related_name="profile", blank=True, null=True)
 
     def __str__(self):
         return f"Profile of {self.player}"
