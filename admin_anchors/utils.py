@@ -7,9 +7,7 @@ from django.utils.http import urlencode
 from django.core.exceptions import ObjectDoesNotExist
 
 
-def resolve_instance_field_path(
-    instance: models.Model, field_path: List[str]
-) -> Optional[models.Model]:
+def resolve_instance_field_path(instance: models.Model, field_path: List[str]) -> Optional[models.Model]:
     if not field_path:
         return instance
 

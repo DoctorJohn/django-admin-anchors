@@ -38,9 +38,7 @@ def admin_anchor(dotted_field_path: str):
             elif isinstance(field, models.ManyToManyField):
                 query = {f"{field.related_query_name()}__pk": instance.pk}
             else:
-                raise ImproperlyConfigured(
-                    f"Unsupported field type: {field}"
-                )  # pragma: no cover
+                raise ImproperlyConfigured(f"Unsupported field type: {field}")  # pragma: no cover
 
             return create_admin_anchor(
                 app_label=related_model._meta.app_label,

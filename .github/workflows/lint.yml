@@ -33,5 +33,5 @@ jobs:
         run: poetry install --no-interaction
       - name: Lint
         run: |
-          poetry run ruff admin_anchors tests
-          poetry run black admin_anchors tests --check
+          poetry run ruff check admin_anchors tests
+          poetry run ruff format --check admin_anchors tests
