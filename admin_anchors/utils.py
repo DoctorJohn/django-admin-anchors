@@ -7,7 +7,9 @@ from django.utils.html import format_html
 from django.utils.http import urlencode
 
 
-def resolve_instance_field_path(instance: models.Model, field_path: List[str]) -> Optional[models.Model]:
+def resolve_instance_field_path(
+    instance: models.Model, field_path: List[str]
+) -> Optional[models.Model]:
     if not field_path:
         return instance
 

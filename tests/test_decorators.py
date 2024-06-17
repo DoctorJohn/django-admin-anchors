@@ -140,7 +140,10 @@ def test_empty_indirect_obj_results_in_empty_anchor(profile_admin):
 def test_one_to_one_rel_anchor_generation(player, profile):
     assert isinstance(player._meta.get_field("profile"), models.OneToOneRel)
     assert player.profile is not None
-    assert profile_anchor(None, player) == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
+    assert (
+        profile_anchor(None, player)
+        == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -154,7 +157,10 @@ def test_empty_one_to_one_rel_anchor_generation(player, profile_admin):
 def test_one_to_one_field_anchor_generation(player, profile, profile_admin):
     assert isinstance(profile._meta.get_field("player"), models.OneToOneField)
     assert profile.player is not None
-    assert player_anchor(profile_admin, profile) == f"<a href='/admin/gaming/player/?pk={player.pk}'>Player</a>"
+    assert (
+        player_anchor(profile_admin, profile)
+        == f"<a href='/admin/gaming/player/?pk={player.pk}'>Player</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -170,7 +176,10 @@ def test_emtpy_one_to_one_field_anchor_generation(profile_admin):
 def test_foreign_key_anchor_generation(player, team):
     assert isinstance(team._meta.get_field("captain"), models.ForeignKey)
     assert team.captain is not None
-    assert captain_anchor(None, team) == f"<a href='/admin/gaming/player/?pk={player.pk}'>Captain</a>"
+    assert (
+        captain_anchor(None, team)
+        == f"<a href='/admin/gaming/player/?pk={player.pk}'>Captain</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -186,14 +195,20 @@ def test_empty_foreign_key_anchor_generation(team_admin):
 def test_many_to_one_rel_anchor_generation(player, team):
     assert isinstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
     assert list(player.led_teams.all()) == [team]
-    assert led_teams_anchor(None, player) == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
+    assert (
+        led_teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
+    )
 
 
 @pytest.mark.django_db
 def test_empty_many_to_one_rel_anchor_generation(player):
     assert isinstance(player._meta.get_field("led_teams"), models.ManyToOneRel)
     assert list(player.led_teams.all()) == []
-    assert led_teams_anchor(None, player) == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
+    assert (
+        led_teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?captain__pk={player.pk}'>Led teams</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -202,14 +217,20 @@ def test_many_to_many_rel_anchor_generation(player, team):
 
     assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
     assert list(player.teams.all()) == [team]
-    assert teams_anchor(None, player) == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    assert (
+        teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
 
 
 @pytest.mark.django_db
 def test_empty_many_to_many_rel_anchor_generation(player):
     assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
     assert list(player.teams.all()) == []
-    assert teams_anchor(None, player) == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    assert (
+        teams_anchor(None, player)
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -218,14 +239,20 @@ def test_many_to_many_field_anchor_generation(player, team):
 
     assert isinstance(team._meta.get_field("members"), models.ManyToManyField)
     assert list(team.members.all()) == [player]
-    assert members_anchor(None, team) == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
+    assert (
+        members_anchor(None, team)
+        == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
+    )
 
 
 @pytest.mark.django_db
 def test_empty_many_to_many_field_anchor_generation(team):
     assert isinstance(team._meta.get_field("members"), models.ManyToManyField)
     assert list(team.members.all()) == []
-    assert members_anchor(None, team) == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
+    assert (
+        members_anchor(None, team)
+        == f"<a href='/admin/gaming/player/?teams__pk={team.pk}'>Members</a>"
+    )
 
 
 @pytest.mark.django_db
@@ -234,25 +261,36 @@ def test_indirect_many_to_many_rel_field_anchor_generation(player, profile, team
 
     assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
     assert list(player.teams.all()) == [team]
-    assert player_teams_anchor(None, profile) == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    assert (
+        player_teams_anchor(None, profile)
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
 
 
 @pytest.mark.django_db
 def test_empty_indirect_many_to_many_rel_field_anchor_generation(player, profile):
     assert isinstance(player._meta.get_field("teams"), models.ManyToManyRel)
     assert list(player.teams.all()) == []
-    assert player_teams_anchor(None, profile) == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    assert (
+        player_teams_anchor(None, profile)
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
 
 
 @pytest.mark.django_db
 def test_indirect_one_to_one_rel_field_anchor_generation(player, profile, team):
     assert isinstance(team.captain._meta.get_field("profile"), models.OneToOneRel)
     assert player.profile is not None
-    assert captains_profile_anchor(None, team) == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
+    assert (
+        captains_profile_anchor(None, team)
+        == f"<a href='/admin/gaming/profile/?pk={profile.pk}'>Profile</a>"
+    )
 
 
 @pytest.mark.django_db
-def test_empty_indirect_one_to_one_rel_field_anchor_generation(player, team, team_admin):
+def test_empty_indirect_one_to_one_rel_field_anchor_generation(
+    player, team, team_admin
+):
     assert isinstance(team.captain._meta.get_field("profile"), models.OneToOneRel)
     assert not hasattr(player, "profile")
     assert captains_profile_anchor(team_admin, team) == "-"
