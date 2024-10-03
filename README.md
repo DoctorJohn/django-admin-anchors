@@ -13,7 +13,7 @@
 [codecov-image]: https://codecov.io/gh/DoctorJohn/django-admin-anchors/branch/main/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/DoctorJohn/django-admin-anchors
 [license-image]: https://img.shields.io/pypi/l/django-admin-anchors
-[license-url]: https://github.com/DoctorJohn/django-admin-anchors/blob/master/LICENSE
+[license-url]: https://github.com/DoctorJohn/django-admin-anchors/blob/main/LICENSE
 
 Turn Django admin list display items into clickable links to related
 objects using decorators.
