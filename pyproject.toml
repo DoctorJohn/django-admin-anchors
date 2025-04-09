@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-admin-anchors"
-version = "4.2.0"
+version = "4.3.0"
 description = "Link related objects in Django admin using decorators"
 license = "MIT"
 authors = ["Jonathan Ehwald <github@ehwald.info>"]
