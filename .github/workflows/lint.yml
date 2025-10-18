@@ -26,4 +26,4 @@ jobs:
       - name: Lint
         run: |
           uv run ruff check admin_anchors tests
-          uv run ruff format --check admin_anchors tests
+          uv run ruff format --diff admin_anchors tests
