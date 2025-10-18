@@ -1,6 +1,6 @@
 [project]
 name = "django-admin-anchors"
-version = "4.3.0"
+version = "4.4.0"
 description = "Link related objects in Django admin using decorators"
 authors = [{ name = "Jonathan Ehwald", email = "github@ehwald.info" }]
 license = { text = "MIT" }
