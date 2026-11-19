@@ -57,6 +57,10 @@ module-name = "admin_anchors"
 
 [tool.ruff.lint]
 extend-select = ["I", "UP"]
+ignore = [
+    # Django's class attributes (e.g. ModelAdmin.list_display, Migration.operations) are idiomatically lists
+    "RUF012",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tests.project.project.settings"
