@@ -3,6 +3,7 @@
 [![PyPI][pypi-image]][pypi-url]
 ![PyPI - Python Version][python-image]
 ![PyPI - Django Version][django-image]
+[![Downloads][downloads-image]][downloads-url]
 [![Codecov][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 
@@ -10,6 +11,8 @@
 [pypi-url]: https://pypi.org/project/django-admin-anchors/
 [python-image]: https://img.shields.io/pypi/pyversions/django-admin-anchors
 [django-image]: https://img.shields.io/pypi/djversions/django-admin-anchors
+[downloads-image]: https://img.shields.io/pypi/dm/django-admin-anchors
+[downloads-url]: https://pypistats.org/packages/django-admin-anchors
 [codecov-image]: https://codecov.io/gh/DoctorJohn/django-admin-anchors/branch/main/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/DoctorJohn/django-admin-anchors
 [license-image]: https://img.shields.io/pypi/l/django-admin-anchors
