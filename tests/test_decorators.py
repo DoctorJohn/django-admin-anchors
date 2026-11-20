@@ -1,5 +1,7 @@
 import pytest
 from django.contrib import admin
+from django.contrib.admin.models import ADDITION, LogEntry
+from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 
@@ -274,6 +276,57 @@ def test_empty_indirect_many_to_many_rel_field_anchor_generation(player, profile
     assert (
         player_teams_anchor(None, profile)
         == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
+
+
+@admin_anchor("captain.led_teams")
+def captains_led_teams_anchor(self, instance):
+    return "Led teams"
+
+
+@admin_anchor("user.groups")
+def users_groups_anchor(self, instance):
+    return "Groups"
+
+
+@pytest.mark.django_db
+def test_indirect_many_to_many_rel_filters_by_intermediate_object():
+    Profile.objects.create()
+    player = Player.objects.create(name="John")
+    profile = Profile.objects.create(player=player)
+
+    assert profile.pk != player.pk
+    assert (
+        player_teams_anchor(None, profile)
+        == f"<a href='/admin/gaming/team/?members__pk={player.pk}'>Teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_indirect_many_to_one_rel_filters_by_intermediate_object():
+    Player.objects.create(name="Jane")
+    captain = Player.objects.create(name="John")
+    team = Team.objects.create(captain=captain)
+
+    assert team.pk != captain.pk
+    assert isinstance(captain._meta.get_field("led_teams"), models.ManyToOneRel)
+    assert (
+        captains_led_teams_anchor(None, team)
+        == f"<a href='/admin/gaming/team/?captain__pk={captain.pk}'>Led teams</a>"
+    )
+
+
+@pytest.mark.django_db
+def test_indirect_many_to_many_field_filters_by_intermediate_object():
+    User.objects.create(username="jane")
+    user = User.objects.create(username="john")
+    log_entry = LogEntry.objects.create(user=user, action_flag=ADDITION)
+
+    assert log_entry.pk != user.pk
+    assert isinstance(user._meta.get_field("groups"), models.ManyToManyField)
+    assert (
+        users_groups_anchor(None, log_entry)
+        == f"<a href='/admin/auth/group/?user__pk={user.pk}'>Groups</a>"
     )
 
 

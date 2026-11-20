@@ -34,9 +34,9 @@ def admin_anchor(dotted_field_path: str):
             if isinstance(field, (models.OneToOneRel, models.ForeignKey)):
                 query = {"pk": field_value.pk}
             elif isinstance(field, (models.ManyToOneRel, models.ManyToManyRel)):
-                query = {f"{field.field.name}__pk": instance.pk}
+                query = {f"{field.field.name}__pk": field_parent.pk}
             elif isinstance(field, models.ManyToManyField):
-                query = {f"{field.related_query_name()}__pk": instance.pk}
+                query = {f"{field.related_query_name()}__pk": field_parent.pk}
             else:
                 raise ImproperlyConfigured(
                     f"Unsupported field type: {field}"
