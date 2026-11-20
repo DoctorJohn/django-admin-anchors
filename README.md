@@ -27,7 +27,9 @@ and run actions on the filtered objects.
 
 ## Installation
 
-`pip install django-admin-anchors`
+```sh
+pip install django-admin-anchors
+```
 
 ## Usage
 
