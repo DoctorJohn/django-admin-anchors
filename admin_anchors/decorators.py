@@ -4,6 +4,8 @@ from django.db import models
 
 from admin_anchors.utils import (
     create_admin_anchor,
+    get_field,
+    get_field_accessor_name,
     resolve_instance_field_path,
 )
 
@@ -20,13 +22,13 @@ def admin_anchor(dotted_field_path: str):
             if field_parent is None:
                 return model_admin.get_empty_value_display()
 
-            field = field_parent._meta.get_field(field_name)
+            field = get_field(type(field_parent), field_name)
             related_model = field.related_model
 
             if related_model is None:
                 raise ImproperlyConfigured(f"Non-relation field referenced: {field}")
 
-            field_value = getattr(field_parent, field_name, None)
+            field_value = getattr(field_parent, get_field_accessor_name(field), None)
 
             if not field_value:
                 return model_admin.get_empty_value_display()

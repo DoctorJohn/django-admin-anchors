@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from admin_anchors import admin_anchor
-from tests.project.gaming.models import Player, Profile, Team
+from tests.project.gaming.models import Player, Profile, Team, Tournament
 
 
 @admin.register(Player)
@@ -50,3 +50,16 @@ class TeamAdmin(admin.ModelAdmin):
     @admin_anchor("members")
     def members_link(self, instance):
         return f"{instance.members.count()} members"
+
+
+@admin.register(Tournament)
+class TournamentAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "host_link", "participants_link"]
+
+    @admin_anchor("host")
+    def host_link(self, instance):
+        return str(instance.host)
+
+    @admin_anchor("participants")
+    def participants_link(self, instance):
+        return f"{instance.participants.count()} participants"
