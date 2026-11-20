@@ -1,11 +1,12 @@
 import pytest
 from django.contrib import admin
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 
 from admin_anchors import admin_anchor
 from tests.project.gaming.admin import PlayerAdmin, ProfileAdmin, TeamAdmin
-from tests.project.gaming.models import Player, Profile, Team
+from tests.project.gaming.models import Player, Profile, Team, Tournament
 
 
 @admin_anchor("name")
@@ -61,6 +62,26 @@ def members_anchor(self, instance):
 @admin_anchor("player.teams")
 def player_teams_anchor(self, instance):
     return "Teams"
+
+
+@admin_anchor("tournament")
+def tournament_anchor(self, instance):
+    return "Tournaments"
+
+
+@admin_anchor("tournament_set")
+def tournament_set_anchor(self, instance):
+    return "Tournaments"
+
+
+@admin_anchor("user")
+def user_anchor(self, instance):
+    return "Users"
+
+
+@admin_anchor("user_set")
+def user_set_anchor(self, instance):
+    return "Users"
 
 
 @pytest.fixture
@@ -294,3 +315,45 @@ def test_empty_indirect_one_to_one_rel_field_anchor_generation(
     assert isinstance(team.captain._meta.get_field("profile"), models.OneToOneRel)
     assert not hasattr(player, "profile")
     assert captains_profile_anchor(team_admin, team) == "-"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("anchor", [tournament_anchor, tournament_set_anchor])
+def test_default_named_many_to_one_rel_anchor_generation(anchor, player):
+    tournament = Tournament.objects.create(host=player)
+
+    assert isinstance(player._meta.get_field("tournament"), models.ManyToOneRel)
+    assert list(player.tournament_set.all()) == [tournament]
+    assert (
+        anchor(None, player)
+        == f"<a href='/admin/gaming/tournament/?host__pk={player.pk}'>Tournaments</a>"
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("anchor", [tournament_anchor, tournament_set_anchor])
+def test_default_named_many_to_many_rel_anchor_generation(anchor, team):
+    tournament = Tournament.objects.create()
+    tournament.participants.add(team)
+
+    assert isinstance(team._meta.get_field("tournament"), models.ManyToManyRel)
+    assert list(team.tournament_set.all()) == [tournament]
+    assert anchor(None, team) == (
+        f"<a href='/admin/gaming/tournament/?participants__pk={team.pk}'>"
+        "Tournaments</a>"
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("anchor", [user_anchor, user_set_anchor])
+def test_django_auth_group_users_anchor_generation(anchor):
+    group = Group.objects.create(name="Staff")
+    user = User.objects.create(username="john")
+    user.groups.add(group)
+
+    assert isinstance(group._meta.get_field("user"), models.ManyToManyRel)
+    assert list(group.user_set.all()) == [user]
+    assert (
+        anchor(None, group)
+        == f"<a href='/admin/auth/user/?groups__pk={group.pk}'>Users</a>"
+    )
