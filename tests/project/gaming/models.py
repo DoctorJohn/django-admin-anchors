@@ -32,3 +32,22 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Tournament(models.Model):
+    name = models.CharField(max_length=32)
+
+    # Neither relation sets a related_name, so their reverse accessors use
+    # Django's defaults (player.tournament_set and team.tournament_set),
+    # which differ from their related query names ("tournament").
+    participants = models.ManyToManyField(Team)
+
+    host = models.ForeignKey(
+        Player,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return self.name
