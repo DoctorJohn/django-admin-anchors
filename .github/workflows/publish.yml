@@ -26,5 +26,7 @@ jobs:
         run: uv run --isolated --no-project --with dist/*.whl -m tests.project.manage check
       - name: Smoke test (source distribution)
         run: uv run --isolated --no-project --with dist/*.tar.gz -m tests.project.manage check
+      - name: Attest
+        run: uvx --from pypi-attestations==0.0.31 python -m pypi_attestations sign dist/*
       - name: Publish
         run: uv publish
